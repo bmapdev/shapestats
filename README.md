@@ -57,12 +57,16 @@ Installation for Mac OSX/Linux - Approach 1
 --------------
 To be followed if all the requirements above are satisfied. 
 
-It is recommended to create a virtual python environment in your BrainSuite directory.
+It is recommended to create a virtual python environment for your user.
+If the downloaded location for the stats package is at ~/shapestats
 
-For e.g., if your BrainSuite installation is located at /Applications/Brainsuite13a, and the bst package is downloaded at ~/bst-0.1dev.tar.gz, then open the terminal and type
+For e.g., to create a virtualenv in your user directory, you could open the terminal and type
 ```sh
-virtualenv --system-site-packages /Applications/Brainsuite13a/bstenv
-/Applications/Brainsuite13a/bstenv/bin/pip install ~/bst-0.1dev.tar.gz
+virtualenv --system-site-packages ~/statsenv
+```
+and
+```sh
+~/statsenv/bin/python ~/shapestats/setup.py install
 ```
 
 Installation for Mac OSX/Linux  - Approach 2
@@ -71,14 +75,13 @@ Installation for Mac OSX/Linux  - Approach 2
 
 Bootstrap everything. Start with a basic python installation
 
-Create a virtualenv in the BrainSuite directory
+Create a virtualenv in the user directory
 
 Install all the packages in virtualenv
 
-Install the bst package in virtualenv
+Install the shapestats package in virtualenv
 
 
-<!---
 Example for running ANOVA for model comparison
 --------------
 The source package includes a test directory with sample data. Assuming the unzipped source directory is located at: ~/shapestats, open the file
@@ -91,12 +94,10 @@ subjectdir, demographics, phenotype_attribute_matrix, atlas_surface
 ```
 to correspond to the paths on your file system. 
 Then type,
-
 ```sh
-/Applications/Brainsuite13a/bstenv/bin/bst_model.py -modelspec 
-~/bmapdev-bst/bst/test/data/sample1/modelspec.ini -outdir ~/ -statsengine R
+~/statsenv/bin/shapestats_model.py -modelspec
+~/shapestats/shapestats/test/data/sample1/modelspec.ini -outdir ~/ -statsengine R
 ```
---->
 
 ---
 License
