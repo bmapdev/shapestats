@@ -26,9 +26,11 @@ class ModelSpec(object):
         self.nullmodel = ''
         self.stat_test = ''
         self.variables = ''
+        self.variable_to_corr = ''
         self.unique = ''
         self.factors = []
         self.atlas_shape = ''
+
         self.read_modelfile(modelfile)
         self.parse_model()
 
@@ -46,6 +48,7 @@ class ModelSpec(object):
 
 
         self.modeltype = config.get('model', 'modeltype')
+        self.variable_to_corr = config.get('model', 'variable')
         self.fullmodel = config.get('model', 'fullmodel')
         self.nullmodel = config.get('model', 'nullmodel')
         factorstring = config.get('model', 'factors')
@@ -70,3 +73,11 @@ class ModelSpec(object):
         pass
 
 
+class ModelType(object):
+    def __init__(self):
+        pass
+
+    def validate(self):
+        pass
+
+    model_types = ['modelcomparison', 'correlation']
