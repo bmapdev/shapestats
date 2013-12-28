@@ -15,7 +15,7 @@ setup(
     packages=['shapestats'],
     package_dir={'shapestats': base_dir, },
     test_suite='nose.collector',
-    scripts=['bin/shapestats.py', 'bin/paired_t_test_shape.py'],
+    scripts=['bin/shapestats_model.py', 'bin/paired_t_test_shape.py'],
     license='MIT/TBD',
     exclude_package_data={'': ['.gitignore', '.idea']},
     author='Shantanu H. Joshi, David Shattuck, Roger P. Woods',
