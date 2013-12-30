@@ -21,6 +21,7 @@ class StatsOutput(object):
         self.pvalues = np.zeros(dim)
         self.pvalues_signed = np.zeros(dim)
         self.pvalues_adjusted = np.zeros(dim)
+        self.corrvalues = np.zeros(dim)  # Correlations
         self.tvalues = np.zeros(dim)
 
     def adjust_for_multi_comparisons(self):
@@ -47,6 +48,14 @@ class StatsOutput(object):
                 if len(self.pvalues_adjusted) > 0:
                     s1.attributes = self.pvalues_adjusted
                     Shape.writefile(os.path.join(outdir, outprefix + '_pvalues_adjusted' + statsdata.filext), s1)
+                if len(self.corrvalues) > 0:
+                    self.corrvalues[np.abs(self.pvalues) > 0.05] = 0
+                    s1.attributes = self.corrvalues
+                    Shape.writefile(os.path.join(outdir, outprefix + '_corr' + statsdata.filext), s1)
+                    self.corrvalues[np.abs(self.pvalues_adjusted) > 0.05] = 0
+                    s1.attributes = self.corrvalues
+                    Shape.writefile(os.path.join(outdir, outprefix + '_corr_adjusted' + statsdata.filext), s1)
+
                 return
 
             if shape_average:

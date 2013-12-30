@@ -44,5 +44,6 @@ def corr_shape_r(model, sdata):
     corr_coeff = np.array(result[list(result.names).index('estimate')])
     corr_coeff = corr_coeff[1:len(corr_coeff):2]
     statsout.pvalues = np.sign(corr_coeff)*statsout.pvalues[1:len(statsout.pvalues):2]
+    statsout.corrvalues = corr_coeff
     return statsout
 
