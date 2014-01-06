@@ -20,6 +20,7 @@ class ModelSpec(object):
         self.demographics = ''
         self.phenotype = ''
         self.phenotype_attribute_matrix_file = ''
+        self.file = ''
 
         self.modeltype = ''
         self.fullmodel = ''
@@ -41,10 +42,11 @@ class ModelSpec(object):
         config.options(config.sections()[0])
         self.subjdir = config.get('subjectinfo', 'subjectdir')
         self.subjectid = config.get('subjectinfo', 'subjectid')
+        self.file = config.get('subjectinfo', 'file')
         self.demographics = config.get('subjectinfo', 'demographics')
         self.phenotype = config.get('subjectinfo', 'phenotype')
         self.phenotype_attribute_matrix_file = config.get('subjectinfo', 'phenotype_attribute_matrix')
-        self.atlas_shape = config.get('subjectinfo', 'atlas_shape')
+        self.atlas_shape = config.get('subjectinfo', 'atlas')
 
 
         self.modeltype = config.get('model', 'modeltype')

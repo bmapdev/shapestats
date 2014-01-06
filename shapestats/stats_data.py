@@ -32,18 +32,21 @@ class StatsData(object):
         self.filext = None
         self.read_demographics(demographics_file)
 
-        if not model.phenotype_attribute_matrix_file and not model.phenotype:
+        if not model.phenotype_attribute_matrix_file and not model.phenotype and not model.file:
             sys.stdout.write('Error: Phenotype is not set. Data frame will not be created.')
             return
 
-        # Choose the phenotype_attribute_matrix binary data if phenotype is also set
-        if model.phenotype_attribute_matrix_file and model.phenotype:
+        # Choose the phenotype_attribute_matrix binary data if phenotype and file is also set
+        if model.phenotype_attribute_matrix_file and model.phenotype and model.file:
             self.read_subject_phenotype_attribute_matrix(model)
             self.create_data_frame(model)
             return
 
         if model.phenotype:
             self.read_subject_phenotype(model)
+
+        if model.file:
+            self.read_subject_file(model)
 
         self.create_data_frame(model)
 
@@ -57,6 +60,12 @@ class StatsData(object):
     def validate_data(self):
         #TODO routines for validating self.demographic_data
         pass
+
+    def read_subject_file(self, model):
+        for filename in self.demographic_data[model.file]:
+            self.phenotype_files.append(filename)
+        s1, s1_average, self.phenotype_array = Shape.read_aggregated_attributes_from_shapefilelist(self.phenotype_files)
+        return
 
     def read_subject_phenotype(self, model):
         # Test the file and directory hierarchy
