@@ -10,6 +10,7 @@ __credits__ = 'Inspired by the stats package rshape by Roger P. Woods'
 
 from anova_shape_sm import anova_shape_sm
 from anova_shape_r import anova_shape_r
+from anova_shape_mixed_r import anova_shape_mixed_r
 from corr_r import corr_shape_r
 
 
@@ -28,6 +29,7 @@ class StatsEngine(object):
             self.commands = {'anova': anova_shape_sm, }
         elif self.engine == 'R':
             self.commands = {'anova': anova_shape_r,
+                             'anova_mixed': anova_shape_mixed_r,
                              'corr': corr_shape_r, }
 
     def run(self):

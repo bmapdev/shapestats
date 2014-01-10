@@ -33,7 +33,10 @@ class ModelSpec(object):
         self.atlas_shape = ''
 
         self.read_modelfile(modelfile)
-        self.parse_model()
+        if self.stat_test.find('mixed'):
+            self.parse_mixed_model()
+        else:
+            self.parse_model()
 
     def read_modelfile(self, modelfile):
         config = ConfigParser.ConfigParser()
@@ -53,17 +56,29 @@ class ModelSpec(object):
         self.variable_to_corr = config.get('model', 'variable')
         self.fullmodel = config.get('model', 'fullmodel')
         self.nullmodel = config.get('model', 'nullmodel')
+        self.unique = config.get('model', 'unique')  # TODO: find this automaticallly in the future
         factorstring = config.get('model', 'factors')
         for i in re.split(' ', factorstring):
             self.factors.append(i.rstrip().lstrip())
 
         self.stat_test = config.get('model', 'test')
 
+    def parse_mixed_model(self):
+        # Parse fullmodel and nullmodel
+        set_full = set()
+        set_null = set()
+
+        for i in re.findall("[a-zA-Z_]+", self.fullmodel):
+            set_full.add(i.rstrip().lstrip())
+        for i in re.findall("[a-zA-Z_]+", self.nullmodel):
+            set_null.add(i.rstrip().lstrip())
+        self.variables = set_full | set_null
+
     def parse_model(self):
         # Parse fullmodel and nullmodel
         set_full = set()
         set_null = set()
-        for i in re.split('\+|', self.fullmodel):
+        for i in re.split('\+', self.fullmodel):
             set_full.add(i.rstrip().lstrip())
         for i in re.split('\+', self.nullmodel):
             set_null.add(i.rstrip().lstrip())
