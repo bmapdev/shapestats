@@ -79,6 +79,7 @@ def corr_shape_r_block(model, sdata):
 
     stdout.write('Done.\n')
     stdout.write('Saving output files...\n')
+    stdout.flush()
     statsout.pvalues = np.sign(corr_coeff)*pvalues
     statsout.corrvalues = corr_coeff
     return statsout

@@ -39,6 +39,9 @@ class StatsOutput(object):
                 shape_average = None
 
             if atlas_filename:
+                if statsdata.filext is None:
+                    statsdata.filext = '.vtp'
+                    
                 s1 = Shape.readfile(atlas_filename)
                 s1.attributes = self.pvalues
                 if len(s1.attributes) != s1.coords.shape[0]:
