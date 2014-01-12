@@ -48,7 +48,7 @@ class StatsOutput(object):
                 if len(s1.attributes) != s1.coords.shape[0]:
                     sys.stdout.write('Error: Dimension mismatch between the p-values and the number of vertices. '
                                      'Quitting without saving.\n')
-                Shape.writefile(os.path.join(outdir, outprefix + '_pvalues' + statsdata.filext), s1)
+                Shape.writefile(os.path.join(outdir, outprefix + '_pvalues' + self.file_name_string + statsdata.filext), s1)
                 if len(self.pvalues_adjusted) > 0:
                     s1.attributes = self.pvalues_adjusted
                     Shape.writefile(os.path.join(outdir, outprefix + '_pvalues_adjusted' + self.file_name_string + statsdata.filext), s1)
