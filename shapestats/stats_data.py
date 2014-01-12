@@ -21,7 +21,7 @@ import sys
 
 class StatsData(object):
 
-    def __init__(self, demographics_file, model, max_block_size=10000):
+    def __init__(self, demographics_file, model, max_block_size=5000):
         self.demographic_data = ''
         self.dataframe = None
         self.phenotype_files = []
