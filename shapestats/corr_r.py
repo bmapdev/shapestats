@@ -13,6 +13,7 @@ import numpy as np
 from stats_output import StatsOutput
 from rpy2.robjects import r
 r.library("data.table")
+from sys import stdout
 
 
 def corr_r_func():
@@ -53,8 +54,11 @@ def corr_shape_r_block(model, sdata):
     statsout = StatsOutput(dim=siz)
     pvalues = np.ones(siz)
     corr_coeff = np.zeros(siz)
-
+    stdout.write('Computing correlations for blocks...')
+    stdout.flush()
     for block_num, block_idx in enumerate(sdata.blocks_idx):
+        stdout.write(str(block_num) + ', ')
+        stdout.flush()
         r_dataframe = sdata.get_r_data_frame_block(model, block_num)
         robjects.r.assign('r_dataframe', r_dataframe)
         robjects.r(corr_r_func().keys()[0] + corr_r_func()[corr_r_func().keys()[0]])
@@ -73,6 +77,8 @@ def corr_shape_r_block(model, sdata):
         temp = np.array(result[list(result.names).index('estimate')])
         corr_coeff[range(block_idx[0], block_idx[1])] = temp[1:len(temp):2]
 
+    stdout.write('Done.\n')
+    stdout.write('Saving output files...\n')
     statsout.pvalues = np.sign(corr_coeff)*pvalues
     statsout.corrvalues = corr_coeff
     return statsout
