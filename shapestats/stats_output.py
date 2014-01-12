@@ -23,6 +23,7 @@ class StatsOutput(object):
         self.pvalues_adjusted = np.zeros(dim)
         self.corrvalues = np.zeros(dim)  # Correlations
         self.tvalues = np.zeros(dim)
+        self.file_name_string = ''
 
     def adjust_for_multi_comparisons(self):
             self.pvalues_adjusted = Stats_Multi_Comparisons.adjust(self.pvalues)
@@ -50,14 +51,13 @@ class StatsOutput(object):
                 Shape.writefile(os.path.join(outdir, outprefix + '_pvalues' + statsdata.filext), s1)
                 if len(self.pvalues_adjusted) > 0:
                     s1.attributes = self.pvalues_adjusted
-                    Shape.writefile(os.path.join(outdir, outprefix + '_pvalues_adjusted' + statsdata.filext), s1)
+                    Shape.writefile(os.path.join(outdir, outprefix + '_pvalues_adjusted' + self.file_name_string + statsdata.filext), s1)
                 if len(self.corrvalues) > 0:
-                    self.corrvalues[np.abs(self.pvalues) > 0.05] = 0
                     s1.attributes = self.corrvalues
-                    Shape.writefile(os.path.join(outdir, outprefix + '_corr' + statsdata.filext), s1)
+                    Shape.writefile(os.path.join(outdir, outprefix + '_corr' + self.file_name_string + statsdata.filext), s1)
                     self.corrvalues[np.abs(self.pvalues_adjusted) > 0.05] = 0
                     s1.attributes = self.corrvalues
-                    Shape.writefile(os.path.join(outdir, outprefix + '_corr_adjusted' + statsdata.filext), s1)
+                    Shape.writefile(os.path.join(outdir, outprefix + '_corr_adjusted' + self.file_name_string + statsdata.filext), s1)
 
                 return
 
