@@ -77,6 +77,8 @@ def corr_shape_r_block(model, sdata):
         temp = np.array(result[list(result.names).index('estimate')])
         corr_coeff[range(block_idx[0], block_idx[1])] = temp[1:len(temp):2]
 
+    pvalues[np.isnan(pvalues)] = 1
+    corr_coeff[np.isnan(corr_coeff)] = 0
     stdout.write('Done.\n')
     stdout.write('Saving output files...\n')
     stdout.flush()
