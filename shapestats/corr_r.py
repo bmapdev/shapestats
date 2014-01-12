@@ -47,3 +47,32 @@ def corr_shape_r(model, sdata):
     statsout.corrvalues = corr_coeff
     return statsout
 
+
+def corr_shape_r_block(model, sdata):
+    siz = sdata.phenotype_array.shape[1]
+    statsout = StatsOutput(dim=siz)
+    pvalues = np.ones(siz)
+    corr_coeff = np.zeros(siz)
+
+    for block_num, block_idx in enumerate(sdata.blocks_idx):
+        r_dataframe = sdata.get_r_data_frame_block(model, block_num)
+        robjects.r.assign('r_dataframe', r_dataframe)
+        robjects.r(corr_r_func().keys()[0] + corr_r_func()[corr_r_func().keys()[0]])
+        robjects.r('r_datatable <- data.table(r_dataframe)')
+
+        varx = 'value'
+        vary = model.variable_to_corr
+        r_corr_cmd = 'result <- r_datatable[, as.list({0:s}({1:s}, {2:s}, \"{3:s}\")), by=variable]'.format(
+            corr_r_func().keys()[0], varx, vary, "pearson")
+        robjects.r(r_corr_cmd)
+        result = robjects.globalenv['result']
+
+        temp = np.array(result[list(result.names).index('p.value')])
+        pvalues[range(block_idx[0], block_idx[1])] = temp[1:len(temp):2]
+
+        temp = np.array(result[list(result.names).index('estimate')])
+        corr_coeff[range(block_idx[0], block_idx[1])] = temp[1:len(temp):2]
+
+    statsout.pvalues = np.sign(corr_coeff)*pvalues
+    statsout.corrvalues = corr_coeff
+    return statsout

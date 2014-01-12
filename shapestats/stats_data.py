@@ -21,7 +21,7 @@ import sys
 
 class StatsData(object):
 
-    def __init__(self, demographics_file, model):
+    def __init__(self, demographics_file, model, max_block_size=10000):
         self.demographic_data = ''
         self.dataframe = None
         self.phenotype_files = []
@@ -31,6 +31,7 @@ class StatsData(object):
         self.phenotype_dataframe = None
         self.filext = None
         self.read_demographics(demographics_file)
+        self.max_block_size = max_block_size
 
         if not model.phenotype_attribute_matrix_file and not model.phenotype and not model.file:
             sys.stdout.write('Error: Phenotype is not set. Data frame will not be created.')
@@ -48,7 +49,18 @@ class StatsData(object):
         if model.file:
             self.read_subject_file(model)
 
-        self.create_data_frame(model)
+        self.blocks_idx = []
+        # At this point the data is completely read, so create indices of blocks
+        if self.phenotype_array.shape[1] > self.max_block_size:
+            quotient, remainder = divmod(self.phenotype_array.shape[1], self.max_block_size)
+            for i in np.arange(quotient)+1:
+                self.blocks_idx.append(((i-1)*self.max_block_size, (i-1)*self.max_block_size + self.max_block_size))
+            if remainder != 0:
+                i = quotient + 1
+                self.blocks_idx.append(((i-1)*self.max_block_size, (i-1)*self.max_block_size + remainder))
+        else:
+            self.blocks_idx.append((0, self.phenotype_array.shape[1]))
+        return
 
     def read_demographics(self, demographics_file):
         filename, ext = os.path.splitext(demographics_file)
@@ -123,6 +135,52 @@ class StatsData(object):
         tot_dataframe = pandas.melt(tot_dataframe, id_vars=self.demographic_data.columns)
         self.phenotype_dataframe = tot_dataframe
         return
+
+    def get_data_frame_block(self, model, block_num):
+        for i in model.variables:
+            if i in model.factors:
+                self.pre_data_frame[i] = self.demographic_data[i]
+            else:
+                # Use either one of Int, Str, or Float vectors
+                if self.demographic_data[i][0].dtype.type in (np.int32, np.int64):
+                    self.pre_data_frame[i] = self.demographic_data[i]
+                elif self.demographic_data[i][0].dtype.type in (np.float32, np.float64): #TODO check this
+                    self.pre_data_frame[i] = self.demographic_data[i]
+        # Create the phenotype array data frame
+        # Create the column names for vertices automatically
+        colnames = []
+
+        for i in range(self.blocks_idx[block_num][0], self.blocks_idx[block_num][1]):
+            colnames.append('V'+str(i))
+
+        temp_frame = pandas.DataFrame(self.phenotype_array[:, range(self.blocks_idx[block_num][0], self.blocks_idx[block_num][1])])
+        temp_frame.columns = colnames
+        temp_frame[model.subjectid] = self.demographic_data[model.subjectid]
+
+        tot_dataframe = pandas.merge(self.demographic_data, temp_frame)
+        tot_dataframe = pandas.melt(tot_dataframe, id_vars=self.demographic_data.columns)
+        return tot_dataframe
+
+    def convert_pandas_to_r_data_frame(self, model, dataframe):
+        pre_data_frame = {}
+        for i in dataframe.columns:
+            if i in model.factors:
+                pre_data_frame[i] = robjects.FactorVector(dataframe[i])
+            else:
+                # Use either one of Int, Str, or Float vectors
+                if dataframe[i].dtype.type in (np.int32, np.int64):
+                    pre_data_frame[i] = robjects.IntVector(dataframe[i])
+                elif dataframe[i].dtype.type in (np.float32, np.float64):
+                    pre_data_frame[i] = robjects.FloatVector(dataframe[i])
+                else:
+                    pre_data_frame[i] = robjects.FactorVector(dataframe[i])
+
+        return robjects.DataFrame(pre_data_frame)
+
+    def get_r_data_frame_block(self, model, block_num):
+        df = self.get_data_frame_block(model, block_num)
+        return self.convert_pandas_to_r_data_frame(model, df)
+
 
     def get_r_pre_data_frame(self, model):
         pre_data_frame = {}

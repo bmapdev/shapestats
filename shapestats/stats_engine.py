@@ -11,7 +11,7 @@ __credits__ = 'Inspired by the stats package rshape by Roger P. Woods'
 from anova_shape_sm import anova_shape_sm
 from anova_shape_r import anova_shape_r
 from anova_shape_mixed_r import anova_shape_mixed_r
-from corr_r import corr_shape_r
+from corr_r import corr_shape_r_block
 
 
 class StatsEngine(object):
@@ -30,7 +30,7 @@ class StatsEngine(object):
         elif self.engine == 'R':
             self.commands = {'anova': anova_shape_r,
                              'anova_mixed': anova_shape_mixed_r,
-                             'corr': corr_shape_r, }
+                             'corr': corr_shape_r_block, }
 
     def run(self):
         stats_out = self.commands[self.model.stat_test](self.model, self.stats_data)
