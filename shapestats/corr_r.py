@@ -82,4 +82,5 @@ def corr_shape_r_block(model, sdata):
     stdout.flush()
     statsout.pvalues = np.sign(corr_coeff)*pvalues
     statsout.corrvalues = corr_coeff
+    statsout.file_name_string = '_corr_with_' + model.variable_to_corr
     return statsout
