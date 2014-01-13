@@ -21,7 +21,7 @@ class StatsOutput(object):
         self.pvalues = np.zeros(dim)
         self.pvalues_signed = np.zeros(dim)
         self.pvalues_adjusted = np.zeros(dim)
-        self.corrvalues = np.zeros(dim)  # Correlations
+        self.corrvalues = []  # Correlations
         self.tvalues = np.zeros(dim)
         self.file_name_string = ''
 
