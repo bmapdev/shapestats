@@ -10,6 +10,7 @@ shapestats/anova_shape_r.py
 shapestats/anova_shape_sm.py
 shapestats/corr_r.py
 shapestats/modelspec.py
+shapestats/paired_ttest.py
 shapestats/rmodels.py
 shapestats/stats_data.py
 shapestats/stats_engine.py
