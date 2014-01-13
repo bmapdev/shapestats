@@ -12,6 +12,7 @@ from anova_shape_sm import anova_shape_sm
 from anova_shape_r import anova_shape_r
 from anova_shape_mixed_r import anova_shape_mixed_r
 from corr_r import corr_shape_r_block
+from paired_ttest import paired_ttest_block
 
 
 class StatsEngine(object):
@@ -26,11 +27,14 @@ class StatsEngine(object):
 
     def define_stats_commands(self):
         if self.engine == 'sm':
-            self.commands = {'anova': anova_shape_sm, }
+            self.commands = {'anova': anova_shape_sm,
+                             'paired_ttest': paired_ttest_block,
+                             }
         elif self.engine == 'R':
             self.commands = {'anova': anova_shape_r,
                              'anova_mixed': anova_shape_mixed_r,
-                             'corr': corr_shape_r_block, }
+                             'corr': corr_shape_r_block,
+                             }
 
     def run(self):
         stats_out = self.commands[self.model.stat_test](self.model, self.stats_data)
