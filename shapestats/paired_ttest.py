@@ -44,7 +44,7 @@ def paired_ttest_block(model, sdata):
         tvalues[range(block_idx[0], block_idx[1])] = tstat_array
 
     pvalues[np.isnan(pvalues)] = 1
-    tvalues[np.isnan(tvalues)] = 0
+    tvalues[np.isnan(tvalues)] = 1
     stdout.write('Done.\n')
     stdout.write('Saving output files...\n')
     stdout.flush()
