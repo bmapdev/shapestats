@@ -34,7 +34,7 @@ def corr_shape_r(model, sdata):
     robjects.r('r_datatable <- data.table(r_dataframe)')
 
     varx = 'value'
-    vary = model.variable_to_corr
+    vary = model.variable
     r_corr_cmd = 'result <- r_datatable[, as.list({0:s}({1:s}, {2:s}, \"{3:s}\")), by=variable]'.format(
         corr_r_func().keys()[0], varx, vary, "pearson")
     robjects.r(r_corr_cmd)
@@ -65,7 +65,7 @@ def corr_shape_r_block(model, sdata):
         robjects.r('r_datatable <- data.table(r_dataframe)')
 
         varx = 'value'
-        vary = model.variable_to_corr
+        vary = model.variable
         r_corr_cmd = 'result <- r_datatable[, as.list({0:s}({1:s}, {2:s}, \"{3:s}\")), by=variable]'.format(
             corr_r_func().keys()[0], varx, vary, "pearson")
         robjects.r(r_corr_cmd)
@@ -84,5 +84,5 @@ def corr_shape_r_block(model, sdata):
     stdout.flush()
     statsout.pvalues = np.sign(corr_coeff)*pvalues
     statsout.corrvalues = corr_coeff
-    statsout.file_name_string = '_corr_with_' + model.variable_to_corr
+    statsout.file_name_string = '_corr_with_' + model.variable
     return statsout

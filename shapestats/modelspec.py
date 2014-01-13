@@ -27,7 +27,7 @@ class ModelSpec(object):
         self.nullmodel = ''
         self.stat_test = ''
         self.variables = ''
-        self.variable_to_corr = ''
+        self.variable = ''
         self.unique = ''
         self.factors = []
         self.atlas_shape = ''
@@ -53,7 +53,7 @@ class ModelSpec(object):
 
 
         self.modeltype = config.get('model', 'modeltype')
-        self.variable_to_corr = config.get('model', 'variable')
+        self.variable = config.get('model', 'variable')
         self.fullmodel = config.get('model', 'fullmodel')
         self.nullmodel = config.get('model', 'nullmodel')
         self.unique = config.get('model', 'unique')  # TODO: find this automaticallly in the future
