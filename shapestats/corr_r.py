@@ -83,6 +83,7 @@ def corr_shape_r_block(model, sdata):
     stdout.write('Saving output files...\n')
     stdout.flush()
     statsout.pvalues = np.sign(corr_coeff)*pvalues
+    statsout.pvalues[np.isnan(corr_coeff)] = 1  # Set the p-values with the nan correlations to 1
     statsout.corrvalues = corr_coeff
     statsout.file_name_string = '_corr_with_' + model.variable
     return statsout
