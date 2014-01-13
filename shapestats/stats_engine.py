@@ -34,6 +34,7 @@ class StatsEngine(object):
             self.commands = {'anova': anova_shape_r,
                              'anova_mixed': anova_shape_mixed_r,
                              'corr': corr_shape_r_block,
+                             'paired_ttest': paired_ttest_block,
                              }
 
     def run(self):
