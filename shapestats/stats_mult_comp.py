@@ -8,10 +8,8 @@ __copyright__ = "Copyright 2013, Shantanu H. Joshi Ahmanson-Lovelace Brain Mappi
 __email__ = "s.joshi@ucla.edu"
 __credits__ = 'Inspired by the stats package rshape by Roger P. Woods'
 
-from rpy2.robjects.packages import importr
-from rpy2.robjects.vectors import FloatVector
 import numpy as np
-stats = importr('stats')
+from statsmodels.sandbox.stats.multicomp import multipletests
 
 
 class Stats_Multi_Comparisons():
@@ -20,8 +18,9 @@ class Stats_Multi_Comparisons():
         pass
 
     @staticmethod
-    def adjust(pvalues, method='BH'):
+    def adjust(pvalues, method='fdr_tsbh', alpha=0.05):
         direction = np.sign(pvalues)
-        p_adjust = stats.p_adjust(FloatVector(np.abs(pvalues)), method=method)
+        rejected_pvalues, p_adjust, alphacSidak, alphacBonf = \
+            multipletests(np.abs(pvalues), alpha=alpha, method=method)
         return p_adjust*direction
 

@@ -17,17 +17,18 @@ def main():
     parser = argparse.ArgumentParser(description='Adjust p-values by testing for multiple comparisons using fdr.\n')
     parser.add_argument('-i', dest='shapein', help='input surface', required=True)
     parser.add_argument('-o', dest='shapeout', help='output surface', required=True)
-    parser.add_argument('-method', dest='method', help='correction method - holm, hochberg, bonferroni, BH, BY',
-                        required=False, default="BH")
+    parser.add_argument('-method', dest='method', help='correction method - bonferroni, holm, fdr_bh, fdr_tsbh, fdr_tsbky',
+                        required=False, default='fdr_tsbh')
+    parser.add_argument('-q', dest='alpha', help='FDR threshold', type=float, required=False, default=0.05)
 
     args = parser.parse_args()
-    shape_fdr(args.shapein, args.shapeout, args.method)
+    shape_fdr(args.shapein, args.shapeout, args.method, args.alpha)
 
 
-def shape_fdr(shapein, shapeout, method):
+def shape_fdr(shapein, shapeout, method, alpha=0.05):
 
     s1 = Shape.readfile(shapein)
-    s1.attributes = Stats_Multi_Comparisons.adjust(s1.attributes)
+    s1.attributes = Stats_Multi_Comparisons.adjust(s1.attributes, method=method, alpha=alpha)
     Shape.writefile(shapeout, s1)
 
 if __name__ == '__main__':
