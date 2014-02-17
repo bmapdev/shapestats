@@ -7,11 +7,12 @@ __copyright__ = "Copyright 2013, Shantanu H. Joshi Ahmanson-Lovelace Brain Mappi
                  University of California Los Angeles"
 __email__ = "s.joshi@ucla.edu"
 __credits__ = 'Inspired by the stats package rshape by Roger P. Woods'
+
 import sys
 import numpy as np
 import argparse
 import time
-from bst.stats_data import StatsData
+from shapeio.shape import Shape
 from scipy.stats import ttest_rel
 
 
@@ -21,8 +22,8 @@ def main():
                                                  'vertices for each subject should be same.')
     parser.add_argument('-sample1', dest='sample1', help='<txt file for sample 1>', required=True)
     parser.add_argument('-sample2', dest='sample2', help='<txt file for sample 1>', required=True)
-    parser.add_argument('-output_shape', dest='output_shape', help='<output file for shape>', required=True)
-    parser.add_argument('-output_log', dest='output_log', help='<log file>', required=False)
+    parser.add_argument('-o', dest='output_shape', help='<output file for shape>', required=True)
+    parser.add_argument('-oFDR', dest='output_shape_fdr', help='<log file>', required=False)
 
     args = parser.parse_args()
     t = time.time()
@@ -32,10 +33,10 @@ def main():
     print elapsed
 
 
-def paired_t_test(sample1, sample2, output_shape, output_log):
+def paired_t_test(sample1, sample2, output_shape, output_shape_fdr):
 
-    s1, s1_average, attrib1_array = StatsData.read_aggregated_attributes_from_surfaces(sample1)
-    s2, s2_average, attrib2_array = StatsData.read_aggregated_attributes_from_surfaces(sample2)
+    s1, s1_average, attrib1_array = Shape.read_aggregated_attributes_from_surfaces(sample1)
+    s2, s2_average, attrib2_array = Shape.read_aggregated_attributes_from_surfaces(sample2)
 
     if attrib1_array == [] or attrib1_array == []:
         sys.exit('Error in Reading one or more files...Now Exiting.\n')
