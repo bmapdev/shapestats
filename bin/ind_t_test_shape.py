@@ -29,12 +29,12 @@ def main():
     args = parser.parse_args()
     t = time.time()
     # do stuff
-    ind_t_test(args.sample1, args.sample2, args.output_shape, args.output_log)
+    ind_t_test_shape(args.sample1, args.sample2, args.output_shape, args.output_log)
     elapsed = time.time() - t
     print elapsed
 
 
-def ind_t_test(sample1, sample2, output_shape, output_shape_fdr):
+def ind_t_test_shape(sample1, sample2, output_shape, output_shape_fdr):
 
     s1, s1_average, attrib1_array = Shape.read_aggregated_attributes_from_surfaces(sample1)
     s2, s2_average, attrib2_array = Shape.read_aggregated_attributes_from_surfaces(sample2)
