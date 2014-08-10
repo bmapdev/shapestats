@@ -15,6 +15,7 @@ import time
 from shapeio.shape import Shape
 from scipy.stats import ttest_ind
 import shapestats.stats_mult_comp
+import copy
 
 
 def main():
@@ -49,10 +50,9 @@ def ind_t_test_shape(sample1, sample2, output_shape, output_shape_fdr):
 
     s1_average.attributes = pvalue_array_with_sign
     pvalue_array_adjusted = shapestats.stats_mult_comp.Stats_Multi_Comparisons.adjust(pvalue_array_with_sign, method='fdr_tsbh', alpha=0.05, maskfile=None)
-
+    Shape.writefile(output_shape, s1_average)
     s1_average_with_adjusted = s1_average
     s1_average_with_adjusted.attributes = pvalue_array_adjusted
-    Shape.writefile(output_shape, s1_average)
     Shape.writefile(output_shape_fdr, s1_average_with_adjusted)
 
     sys.stdout.write('Done.\n')
