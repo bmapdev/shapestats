@@ -3,9 +3,9 @@
 """Perform a two-sample independent t-test between shapes"""
 
 __author__ = "Shantanu H. Joshi"
-__copyright__ = "Copyright 2013, Shantanu H. Joshi Ahmanson-Lovelace Brain Mapping Center, \
+__copyright__ = "Copyright 2014, Shantanu H. Joshi Ahmanson-Lovelace Brain Mapping Center, \
                  University of California Los Angeles"
-__email__ = "s.joshi@ucla.edu"
+__email__ = "sjoshi@bmap.ucla.edu"
 __credits__ = 'Inspired by the stats package rshape by Roger P. Woods'
 
 import sys
@@ -15,6 +15,7 @@ import time
 from shapeio.shape import Shape
 from scipy.stats import ttest_ind
 import shapestats.stats_mult_comp
+import copy
 
 
 def main():
@@ -29,12 +30,13 @@ def main():
     args = parser.parse_args()
     t = time.time()
     # do stuff
-    ind_t_test_shape(args.sample1, args.sample2, args.output_shape, args.output_log)
+    ind_t_test_shape(args.sample1, args.sample2, args.output_shape, args.output_shape_fdr)
     elapsed = time.time() - t
     print elapsed
 
 
 def ind_t_test_shape(sample1, sample2, output_shape, output_shape_fdr):
+
 
     s1, s1_average, attrib1_array = Shape.read_aggregated_attributes_from_surfaces(sample1)
     s2, s2_average, attrib2_array = Shape.read_aggregated_attributes_from_surfaces(sample2)
@@ -47,12 +49,11 @@ def ind_t_test_shape(sample1, sample2, output_shape, output_shape_fdr):
     pvalue_array_with_sign = np.sign(tstat_array)*pvalue_array
 
     s1_average.attributes = pvalue_array_with_sign
-    pvalue_array_adjusted = shapestats.stats_mult_comp.adjust(pvalue_array_with_sign, method='fdr_tsbh', alpha=0.05, maskfile=None)
-
+    pvalue_array_adjusted = shapestats.stats_mult_comp.Stats_Multi_Comparisons.adjust(pvalue_array_with_sign, method='fdr_tsbh', alpha=0.05, maskfile=None)
+    Shape.writefile(output_shape, s1_average)
     s1_average_with_adjusted = s1_average
     s1_average_with_adjusted.attributes = pvalue_array_adjusted
-    Shape.writefile(output_shape, s1_average.attributes)
-    Shape.writefile(output_shape_fdr, s1_average_with_adjusted.attributes)
+    Shape.writefile(output_shape_fdr, s1_average_with_adjusted)
 
     sys.stdout.write('Done.\n')
     return
