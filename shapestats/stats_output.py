@@ -28,6 +28,10 @@ class StatsOutput(object):
     def adjust_for_multi_comparisons(self):
             self.pvalues_adjusted = Stats_Multi_Comparisons.adjust(self.pvalues)
 
+    @staticmethod
+    def savefile(filename, s1, fdr=True):
+        pass
+
     def save(self, outdir, outprefix, statsdata, atlas_filename=None, shape_average=None):
 
         self.adjust_for_multi_comparisons()
@@ -42,27 +46,27 @@ class StatsOutput(object):
             if atlas_filename:
                 if statsdata.filext is None:
                     statsdata.filext = '.vtp'
-
                 s1 = Shape.readfile(atlas_filename)
-                s1.attributes = self.pvalues
-                if len(s1.attributes) != s1.coords.shape[0]:
-                    sys.stdout.write('Error: Dimension mismatch between the p-values and the number of vertices. '
-                                     'Quitting without saving.\n')
-                Shape.writefile(os.path.join(outdir, outprefix + '_pvalues' + self.file_name_string + statsdata.filext), s1)
-                if len(self.pvalues_adjusted) > 0:
-                    s1.attributes = self.pvalues_adjusted
-                    Shape.writefile(os.path.join(outdir, outprefix + '_pvalues_adjusted' + self.file_name_string + statsdata.filext), s1)
-                if len(self.corrvalues) > 0:
-                    s1.attributes = self.corrvalues
-                    Shape.writefile(os.path.join(outdir, outprefix + '_corr' + self.file_name_string + statsdata.filext), s1)
-                    self.corrvalues[np.abs(self.pvalues_adjusted) > 0.05] = 0
-                    s1.attributes = self.corrvalues
-                    Shape.writefile(os.path.join(outdir, outprefix + '_corr_adjusted' + self.file_name_string + statsdata.filext), s1)
-
-                return
 
             if shape_average:
                 s1 = shape_average
-                s1.attributes = self.pvalues
+
+            s1.attributes = self.pvalues
+            if len(s1.attributes) != s1.coords.shape[0]:
+                sys.stdout.write('Error: Dimension mismatch between the p-values and the number of vertices. '
+                                 'Quitting without saving.\n')
+            Shape.writefile(os.path.join(outdir, outprefix + '_pvalues' + self.file_name_string + statsdata.filext), s1)
+            if len(self.pvalues_adjusted) > 0:
+                s1.attributes = self.pvalues_adjusted
+                Shape.writefile(os.path.join(outdir, outprefix + '_pvalues_adjusted' + self.file_name_string + statsdata.filext), s1)
+            if len(self.corrvalues) > 0:
+                s1.attributes = self.corrvalues
+                Shape.writefile(os.path.join(outdir, outprefix + '_corr' + self.file_name_string + statsdata.filext), s1)
+                self.corrvalues[np.abs(self.pvalues_adjusted) > 0.05] = 0
+                s1.attributes = self.corrvalues
+                Shape.writefile(os.path.join(outdir, outprefix + '_corr_adjusted' + self.file_name_string + statsdata.filext), s1)
+
+                return
+
 
         # print s1.attributes
