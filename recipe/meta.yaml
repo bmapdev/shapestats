@@ -15,6 +15,5 @@ requirements:
         - numpy
         - shapeio
         - scipy
-        - matplotlib
 build:
     number: 0
