@@ -14,8 +14,8 @@ import argparse
 import time
 from shapeio.shape import Shape
 from scipy.stats import ttest_ind
-import shapestats.stats_mult_comp
-import copy
+from shapestats.stats_output import StatsOutput
+from shapestats.stats_data import StatsData
 
 
 def main():
@@ -24,20 +24,24 @@ def main():
                                                  'vertices for each subject should be same.')
     parser.add_argument('-sample1', dest='sample1', help='<txt file for sample 1>', required=True)
     parser.add_argument('-sample2', dest='sample2', help='<txt file for sample 1>', required=True)
-    parser.add_argument('-o', dest='output_shape', help='<output file for shape>', required=True)
-    parser.add_argument('-oFDR', dest='output_shape_fdr', help='<log file>', required=True)
+    parser.add_argument('-odir', dest='odir', help='<output directory>', required=True)
+    parser.add_argument('-prefix', dest='prefix', help='<output filename prefix>', required=False, default='stats_')
+    parser.add_argument('-log_transform_stats', dest='log_transform_stats', help='log transform pvalues',
+                        required=False, action='store_true', default=False)
+
 
     args = parser.parse_args()
     t = time.time()
     # do stuff
-    ind_t_test_shape(args.sample1, args.sample2, args.output_shape, args.output_shape_fdr)
+    ind_t_test_shape(args.sample1, args.sample2, args.odir, args.prefix, args.log_transform_stats)
     elapsed = time.time() - t
     print elapsed
 
 
-def ind_t_test_shape(sample1, sample2, output_shape, output_shape_fdr):
+def ind_t_test_shape(sample1, sample2, odir, prefix, log_transform_stats):
 
-
+    statsdata = StatsData()
+    statsdata.filext = Shape.determine_file_extension(sample1, contains_filelist=True)
     s1, s1_average, attrib1_array = Shape.read_aggregated_attributes_from_surfaces(sample1)
     s2, s2_average, attrib2_array = Shape.read_aggregated_attributes_from_surfaces(sample2)
 
@@ -48,13 +52,9 @@ def ind_t_test_shape(sample1, sample2, output_shape, output_shape_fdr):
     tstat_array, pvalue_array = ttest_ind(attrib1_array, attrib2_array)
     pvalue_array_with_sign = np.sign(tstat_array)*pvalue_array
 
-    s1_average.attributes = pvalue_array_with_sign
-    pvalue_array_adjusted = shapestats.stats_mult_comp.Stats_Multi_Comparisons.adjust(pvalue_array_with_sign, method='fdr_tsbh', alpha=0.05, maskfile=None)
-    Shape.writefile(output_shape, s1_average)
-    s1_average_with_adjusted = s1_average
-    s1_average_with_adjusted.attributes = pvalue_array_adjusted
-    Shape.writefile(output_shape_fdr, s1_average_with_adjusted)
-
+    statsout = StatsOutput()
+    statsout.pvalues = pvalue_array_with_sign
+    statsout.save(odir, prefix, statsdata=statsdata, shape_average=s1_average, save_vtp=True, log_transform=log_transform_stats)
     sys.stdout.write('Done.\n')
     return
 
