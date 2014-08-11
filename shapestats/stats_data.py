@@ -21,7 +21,7 @@ import sys
 
 class StatsData(object):
 
-    def __init__(self, demographics_file, model, max_block_size=5000):
+    def __init__(self, demographics_file=None, model=None, max_block_size=5000):
         self.demographic_data = ''
         self.dataframe = None
         self.phenotype_files = []
@@ -30,7 +30,11 @@ class StatsData(object):
         self.shape_average = None
         self.phenotype_dataframe = None
         self.filext = None
-        self.read_demographics(demographics_file)
+        if not demographics_file and not model:  # Just construct the StatsData object and return
+            return
+
+        if demographics_file:
+            self.read_demographics(demographics_file)
         self.max_block_size = max_block_size
 
         if not model.phenotype_attribute_matrix_file and not model.phenotype and not model.file:
@@ -211,4 +215,24 @@ class StatsData(object):
                     pre_data_frame[i] = robjects.FloatVector(self.demographic_data[i])
 
         return pre_data_frame
+
+    @staticmethod
+    def log_transform_p_values(pvalues):
+        pminneg = -np.min(np.abs(pvalues[pvalues < 0]))
+        if np.abs(pminneg) > 0.05:
+            pminneg = -0.05/100
+
+        pminpos = np.min(pvalues[pvalues > 0])
+
+        pminpos = np.min(pvalues[pvalues > 0])
+        if pminpos > 0.05:
+            posmin = 0.05/100
+
+        if np.sum([pvalues >= 0]) > np.sum([pvalues <= 0]):
+            pvalues[pvalues == 0] = pminpos
+        else:
+            pvalues[pvalues == 0] = pminneg
+
+        log_pvalues = -np.sign(pvalues)*np.log10(np.abs(pvalues))
+        return log_pvalues
 
