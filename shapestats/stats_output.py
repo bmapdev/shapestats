@@ -13,6 +13,7 @@ import os
 from shapeio.shape import Shape
 import sys
 from stats_mult_comp import Stats_Multi_Comparisons
+import colormaps
 
 
 class StatsOutput(object):
@@ -32,7 +33,10 @@ class StatsOutput(object):
     def savefile(filename, s1, fdr=True):
         pass
 
-    def save(self, outdir, outprefix, statsdata, atlas_filename=None, shape_average=None):
+    def save(self, outdir, outprefix, statsdata=None, atlas_filename=None, shape_average=None, save_vtp=False, log_transform=False):
+
+        if statsdata is None:
+            statsdata.filext = None
 
         self.adjust_for_multi_comparisons()
         if not atlas_filename and not shape_average:
@@ -51,20 +55,56 @@ class StatsOutput(object):
             if shape_average:
                 s1 = shape_average
 
-            s1.attributes = self.pvalues
+            if statsdata.filext == '.vtp':
+                save_vtp = False
+            else:
+                save_vtp = True
+
+            if log_transform:
+                log_pvalues = statsdata.log_transform_p_values(self.pvalues)
+                s1.attributes = log_pvalues
+                cmap_pvalues = colormaps.Colormap('pvalue', self.pvalues, log_transform=True)
+            else:
+                s1.attributes = self.pvalues
+                cmap_pvalues = colormaps.Colormap('pvalue', self.pvalues, log_transform=False)
+
             if len(s1.attributes) != s1.coords.shape[0]:
                 sys.stdout.write('Error: Dimension mismatch between the p-values and the number of vertices. '
                                  'Quitting without saving.\n')
             Shape.writefile(os.path.join(outdir, outprefix + '_pvalues' + self.file_name_string + statsdata.filext), s1)
+            cmap_pvalues.exportParaviewCmap(os.path.join(outdir, outprefix + '_pvalues' + self.file_name_string + '.xml'))
+            cmap_pvalues.exportMayavi2LUT(os.path.join(outdir, outprefix + '_pvalues' + self.file_name_string + '.cmap'))
+
+            if save_vtp:
+                Shape.writefile(os.path.join(outdir, outprefix + '_pvalues' + self.file_name_string + statsdata.filext + '.vtp'), s1)
+
             if len(self.pvalues_adjusted) > 0:
-                s1.attributes = self.pvalues_adjusted
+
+                if log_transform:
+                    log_pvalues_adjusted = statsdata.log_transform_p_values(self.pvalues_adjusted)
+                    s1.attributes = log_pvalues_adjusted
+                    cmap_adjusted_pvalues = colormaps.Colormap('pvalue', self.pvalues_adjusted, log_transform=True)
+                else:
+                    s1.attributes = self.pvalues_adjusted
+                    cmap_adjusted_pvalues = colormaps.Colormap('pvalue', self.pvalues_adjusted, log_transform=False)
+
                 Shape.writefile(os.path.join(outdir, outprefix + '_pvalues_adjusted' + self.file_name_string + statsdata.filext), s1)
+                # cmap_adjusted_pvalues = colormaps.Colormap('pvalue', s1.attributes, log_transform=True)
+                cmap_adjusted_pvalues.exportParaviewCmap(os.path.join(outdir, outprefix + '_pvalues_adjusted' + self.file_name_string + '.xml'))
+                cmap_adjusted_pvalues.exportMayavi2LUT(os.path.join(outdir, outprefix + '_pvalues_adjusted' + self.file_name_string + '.cmap'))
+
+                if save_vtp:
+                    Shape.writefile(os.path.join(outdir, outprefix + '_pvalues_adjusted' + self.file_name_string + statsdata.filext + '.vtp'), s1)
             if len(self.corrvalues) > 0:
                 s1.attributes = self.corrvalues
                 Shape.writefile(os.path.join(outdir, outprefix + '_corr' + self.file_name_string + statsdata.filext), s1)
+                if save_vtp:
+                    Shape.writefile(os.path.join(outdir, outprefix + '_corr' + self.file_name_string + statsdata.filext + '.vtp'), s1)
                 self.corrvalues[np.abs(self.pvalues_adjusted) > 0.05] = 0
                 s1.attributes = self.corrvalues
                 Shape.writefile(os.path.join(outdir, outprefix + '_corr_adjusted' + self.file_name_string + statsdata.filext), s1)
+                if save_vtp:
+                    Shape.writefile(os.path.join(outdir, outprefix + '_corr_adjusted' + self.file_name_string + statsdata.filext + '.vtp'), s1)
 
                 return
 
