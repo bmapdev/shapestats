@@ -9,8 +9,6 @@ __email__ = "s.joshi@ucla.edu"
 __credits__ = 'Inspired by the stats package rshape by Roger P. Woods'
 
 import numpy as np
-# from statsmodels.sandbox.stats.multicomp import multipletests
-
 from rpy2.robjects.packages import importr
 from rpy2.robjects.vectors import FloatVector
 stats = importr('stats')
