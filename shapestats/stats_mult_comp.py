@@ -9,7 +9,11 @@ __email__ = "s.joshi@ucla.edu"
 __credits__ = 'Inspired by the stats package rshape by Roger P. Woods'
 
 import numpy as np
-from statsmodels.sandbox.stats.multicomp import multipletests
+# from statsmodels.sandbox.stats.multicomp import multipletests
+
+from rpy2.robjects.packages import importr
+from rpy2.robjects.vectors import FloatVector
+stats = importr('stats')
 
 
 class Stats_Multi_Comparisons():
@@ -18,7 +22,7 @@ class Stats_Multi_Comparisons():
         pass
 
     @staticmethod
-    def adjust(pvalues, method='fdr_tsbh', alpha=0.05, maskfile=None):
+    def adjust(pvalues, method='BH', alpha=0.05, maskfile=None):
 
         p_adjust = pvalues
         direction = np.ones(len(pvalues))
@@ -27,15 +31,13 @@ class Stats_Multi_Comparisons():
 
             valid_idx = list(set(range(len(pvalues))) - set(mask_idx))
             direction_mask = np.sign(pvalues[valid_idx])
-            rejected_pvalues, p_adjust_mask, alphacSidak, alphacBonf = \
-                multipletests(np.abs(pvalues[valid_idx]), alpha=alpha, method=method)
+            p_adjust_mask = stats.p_adjust(FloatVector(np.abs(pvalues)), method=method)
             p_adjust[valid_idx] = p_adjust_mask
             p_adjust[mask_idx] = 1
             direction[valid_idx] = direction_mask
             direction[mask_idx] = 1
         else:
             direction = np.sign(pvalues)
-            rejected_pvalues, p_adjust, alphacSidak, alphacBonf = \
-                multipletests(np.abs(pvalues), alpha=alpha, method=method)
+            p_adjust = stats.p_adjust(FloatVector(np.abs(pvalues)), method=method)
 
         return p_adjust*direction
