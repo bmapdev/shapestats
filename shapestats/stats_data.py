@@ -218,11 +218,19 @@ class StatsData(object):
 
     @staticmethod
     def log_transform_p_values(pvalues):
-        pminneg = -np.min(np.abs(pvalues[pvalues < 0]))
+        if np.any(pvalues[pvalues < 0]):
+            pminneg = -np.min(np.abs(pvalues[pvalues < 0]))
+        else:
+            pminneg = -0.0501
+
+        # pminneg = -np.min(np.abs(pvalues[pvalues < 0]))
         if np.abs(pminneg) > 0.05:
             pminneg = -0.05/100
 
-        pminpos = np.min(pvalues[pvalues > 0])
+        if np.any(pvalues[pvalues > 0]):
+            pminpos = np.min(pvalues[pvalues > 0])
+        else:
+            pminpos = 0.0501
 
         pminpos = np.min(pvalues[pvalues > 0])
         if pminpos > 0.05:
