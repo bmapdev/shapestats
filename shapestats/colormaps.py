@@ -146,11 +146,19 @@ class Colormap:
 
     def create_bidirectional_log_pvalue_colormap(self, attributes, pFDRneg=-0.05, pFDRpos=0.05):
 
-        negmin = -np.min(np.abs(attributes[attributes < 0]))
+        if np.any(attributes[attributes < 0]):
+            negmin = -np.min(np.abs(attributes[attributes < 0]))
+        else:
+            negmin = -0.0501
+
         if np.abs(negmin) > 0.05:
             negmin = -0.001
 
-        negmax = -np.max(np.abs(attributes[attributes < 0]))
+        if np.any(attributes[attributes < 0]):
+            negmax = -np.max(np.abs(attributes[attributes < 0]))
+        else:
+            negmax = -1
+
         posmin = np.min(attributes[attributes > 0])
         if posmin > 0.05:
             posmin = 0.001
