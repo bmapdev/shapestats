@@ -62,15 +62,31 @@ class Colormap:
         Colormap for pvalues. Assumes pvalues lie in |p| <= 1
         """
 
-        negmin = -np.min(np.abs(attributes[attributes < 0]))
+        if np.any(attributes[attributes < 0]):
+            negmin = -np.min(np.abs(attributes[attributes < 0]))
+        else:
+            negmin = -0.0501
+
         if np.abs(negmin) > 0.05:
             negmin = -0.001
-        negmax = -np.max(np.abs(attributes[attributes < 0]))
-        posmin = np.min(attributes[attributes > 0])
+
+        if np.any(attributes[attributes < 0]):
+            negmax = -np.max(np.abs(attributes[attributes < 0]))
+        else:
+            negmax = -1
+
+        if np.any(attributes[attributes > 0]):
+            posmin = np.min(attributes[attributes > 0])
+        else:
+            posmin = 0.0501
+
         if posmin > 0.05:
             posmin = 0.001
 
-        posmax = np.max(attributes[attributes > 0])
+        if np.any(attributes[attributes > 0]):
+            posmax = np.max(attributes[attributes > 0])
+        else:
+            posmax = 1
 
 
         neg_range = np.linspace(-1, negmin, 5)
