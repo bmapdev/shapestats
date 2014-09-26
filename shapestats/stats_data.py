@@ -47,11 +47,11 @@ class StatsData(object):
             self.create_data_frame(model)
             return
 
-        if model.phenotype:
-            self.read_subject_phenotype(model)
-
         if model.file:
             self.read_subject_file(model)
+            self.create_data_frame(model)
+        elif model.phenotype:
+            self.read_subject_phenotype(model)
 
         self.blocks_idx = []
         # At this point the data is completely read, so create indices of blocks
