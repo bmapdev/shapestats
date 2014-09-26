@@ -10,6 +10,7 @@ __credits__ = 'Inspired by the stats package rshape by Roger P. Woods'
 
 import rpy2.robjects as robjects
 import numpy as np
+from sys import stdout
 from stats_output import StatsOutput
 from rpy2.robjects import r
 r.library("data.table")
@@ -30,7 +31,7 @@ def anova_r_func():
 
 
 def anova_shape_r(model, sdata):
-
+    siz = sdata.phenotype_array.shape[1]
     statsout = StatsOutput(dim=sdata.phenotype_array.shape[1])
     r_dataframe = sdata.get_r_pre_data_frame(model)
     robjects.r.assign('r_dataframe', r_dataframe)
@@ -44,6 +45,38 @@ def anova_shape_r(model, sdata):
     robjects.r(r_anova_cmd)
     result = robjects.globalenv['result']
     statsout.pvalues = list(result[1])
+    return statsout
+
+
+def anova_shape_r_block(model, sdata):
+    siz = sdata.phenotype_array.shape[1]
+    statsout = StatsOutput(dim=siz)
+    pvalues = np.ones(siz)
+
+    stdout.write('Computing regressions for blocks...')
+    stdout.flush()
+    for block_num, block_idx in enumerate(sdata.blocks_idx):
+        stdout.write(str(block_num) + ', ')
+        stdout.flush()
+        r_dataframe = sdata.get_r_data_frame_block(model, block_num)
+        robjects.r.assign('r_dataframe', r_dataframe)
+        robjects.r(anova_r_func().keys()[0] + anova_r_func()[anova_r_func().keys()[0]])
+        robjects.r('r_datatable <- data.table(r_dataframe)')
+        model_full = 'value' + ' ~ ' + model.fullmodel
+        model_null = 'value' + ' ~ ' + model.nullmodel
+
+        r_anova_cmd = 'result <- r_datatable[, as.list({0:s}({1:s}, {2:s}, \"{3:s}\")), by=variable]'.format(
+            anova_r_func().keys()[0], model_full, model_null, model.unique)
+        robjects.r(r_anova_cmd)
+        result = robjects.globalenv['result']
+
+        # temp = result[1]
+        pvalues[range(block_idx[0], block_idx[1])] = result[1]
+        # temp = np.array(result[list(result.names).index('p.value')])
+        # pvalues[range(block_idx[0], block_idx[1])] = temp[1:len(temp):2]
+
+    pvalues[np.isnan(pvalues)] = 1
+    statsout.pvalues = pvalues
     return statsout
 
 
