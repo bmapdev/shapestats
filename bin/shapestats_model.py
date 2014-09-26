@@ -13,9 +13,6 @@ __credits__ = 'Inspired by the stats package rshape by Roger P. Woods'
 import argparse
 import time
 import logging
-from shapestats.modelspec import ModelSpec
-from shapestats.stats_data import StatsData
-from shapestats.stats_engine import StatsEngine
 import os
 
 
@@ -35,6 +32,9 @@ def main():
 
 
 def shapestats_model(modelspec, outdir, outprefix, opt_statsengine):
+    from shapestats.modelspec import ModelSpec
+    from shapestats.stats_data import StatsData
+    from shapestats.stats_engine import StatsEngine
 
     if not os.path.exists(outdir):
         os.mkdir(outdir)
