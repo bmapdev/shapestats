@@ -10,6 +10,8 @@ __credits__ = 'Inspired by the stats package rshape by Roger P. Woods'
 
 from anova_shape_sm import anova_shape_sm
 from anova_shape_r import anova_shape_r
+from anova_shape_r import anova_shape_r_block
+from anova_shape_r import anova_shape_r_nonoptimal
 from anova_shape_mixed_r import anova_shape_mixed_r
 from corr_r import corr_shape_r_block
 from paired_ttest import paired_ttest_block
@@ -31,7 +33,7 @@ class StatsEngine(object):
                              'paired_ttest': paired_ttest_block,
                              }
         elif self.engine == 'R':
-            self.commands = {'anova': anova_shape_r,
+            self.commands = {'anova': anova_shape_r_block,
                              'anova_mixed': anova_shape_mixed_r,
                              'corr': corr_shape_r_block,
                              'paired_ttest': paired_ttest_block,
