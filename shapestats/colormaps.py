@@ -68,7 +68,7 @@ class Colormap:
             negmin = -0.0501
 
         if np.abs(negmin) > 0.05:
-            negmin = -0.001
+            negmin = -0.0501
 
         if np.any(attributes[attributes < 0]):
             negmax = -np.max(np.abs(attributes[attributes < 0]))
@@ -81,7 +81,7 @@ class Colormap:
             posmin = 0.0501
 
         if posmin > 0.05:
-            posmin = 0.001
+            posmin = 0.0501
 
         if np.any(attributes[attributes > 0]):
             posmax = np.max(attributes[attributes > 0])
@@ -168,7 +168,7 @@ class Colormap:
             negmin = -0.0501
 
         if np.abs(negmin) > 0.05:
-            negmin = -0.001
+            negmin = -0.0501
 
         if np.any(attributes[attributes < 0]):
             negmax = -np.max(np.abs(attributes[attributes < 0]))
@@ -177,7 +177,7 @@ class Colormap:
 
         posmin = np.min(attributes[attributes > 0])
         if posmin > 0.05:
-            posmin = 0.001
+            posmin = 0.0501
 
         posmax = np.max(attributes[attributes > 0])
 
@@ -197,20 +197,20 @@ class Colormap:
         # Make the dict object for red, green, and blue
         color_dict = {'red': [(-pex, 0.0, 0.0),
                               (-pFDRneglog, 0.0, 0.0),
-                              (-pFDRneglog/1.0001, 1.0, 1.0),
+                              (-pFDRneglog/1.0001, 1, 1.0),
                               (pFDRposlog/1.0001, 1.0, 1.0),
                               (pFDRposlog, 1.0, 1.0),
                               (pex, 1.0, 1.0)],
                       'green': [(-pex, 1.0, 1.0),
                                 (-pFDRneglog, 0.0, 0.0),
-                                (-pFDRneglog/1.0001, 1.0, 1.0),
-                                (pFDRposlog/1.0001, 1.0, 1.0),
+                                (-pFDRneglog/1.0001, 0.74, 0.74),
+                                (pFDRposlog/1.0001, 0.8, 0.8),
                                 (pFDRposlog, 0.0, 0.0),
                                 (pex, 1.0, 1.0)],
                       'blue': [(-pex, 1.0, 1.0),
                                (-pFDRneglog, 1.0, 1.0),
-                               (-pFDRneglog/1.0001, 1.0, 1.0),
-                               (pFDRposlog/1.0001, 1.0, 1.0),
+                               (-pFDRneglog/1.0001, 0.44, 0.44),
+                               (pFDRposlog/1.0001, 0.56, 0.56),
                                (pFDRposlog, 0.0, 0.0),
                                (pex, 0.0, 0.0)],
                       }
