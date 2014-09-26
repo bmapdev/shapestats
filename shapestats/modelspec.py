@@ -10,6 +10,9 @@ __credits__ = 'Inspired by the stats package rshape by Roger P. Woods'
 
 import ConfigParser
 import re
+import sys
+from stats_data import StatsData
+import numpy as np
 
 
 class ModelSpec(object):
@@ -33,7 +36,7 @@ class ModelSpec(object):
         self.atlas_shape = ''
 
         self.read_modelfile(modelfile)
-        if self.stat_test.find('mixed'):
+        if self.stat_test.find('mixed') != -1:
             self.parse_mixed_model()
         else:
             self.parse_model()
@@ -56,7 +59,7 @@ class ModelSpec(object):
         self.variable = config.get('model', 'variable')
         self.fullmodel = config.get('model', 'fullmodel')
         self.nullmodel = config.get('model', 'nullmodel')
-        self.unique = config.get('model', 'unique')  # TODO: find this automaticallly in the future
+        # self.unique = config.get('model', 'unique')  # TODO: find this automaticallly in the future
         factorstring = config.get('model', 'factors')
         for i in re.split(' ', factorstring):
             self.factors.append(i.rstrip().lstrip())
