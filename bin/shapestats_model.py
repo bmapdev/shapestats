@@ -22,7 +22,7 @@ def main():
     parser.add_argument('-outdir', dest='outdir', help='<output directory>', required=True)
     parser.add_argument('-outprefix', dest='outprefix', help='<output prefix>', required=False, default='hemi')
     parser.add_argument('-statsengine', dest='statsengine', help='<statistical engine [R/sm]>',
-                        required=False, choices=['R', 'sm'], default='statsmodel')
+                        required=False, choices=['R', 'sm'], default='R')
 
     args = parser.parse_args()
     t = time.time()
